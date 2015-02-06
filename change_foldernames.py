@@ -2,6 +2,7 @@ import os
 import re
 import csv
 
+base_url = "http://54.163.244.26/7641/supervised/"
 feedback_dir_original = "Feedback Attachment(s)"
 submission_dir_original = "Submission attachment(s)"
 
@@ -52,3 +53,14 @@ print "These were skipped:"
 print not_regexed
 print "No key found for these:"
 print not_keyed
+
+# Listing submission URLs
+with open('submissions.csv', 'wb') as file:
+    writer = csv.writer(file, delimiter=',')
+
+    for fn in os.listdir(basedir):
+        submission_dir = os.path.join(basedir, fn, "submission")
+        if os.path.isdir(submission_dir):
+            for n in os.listdir(submission_dir):
+                f = base_url + fn + "/submission/" + n
+                writer.writerow([fn, n, f])
