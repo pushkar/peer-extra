@@ -15,7 +15,8 @@ with open('roster.csv', 'rb') as file:
     for row in reader:
         if len(row) == 7:
             s = row[4].strip().lower() + row[5].strip().lower()
-            student[s] = row[0]
+            if len(s) > 0:
+                student[s] = row[0]
 
 print "Student dictinary built with " + str(len(student)) + " items."
 
@@ -41,6 +42,7 @@ for fn in os.listdir(basedir):
             dir_count = dir_count + 1
             dir_path = os.path.join(basedir, fn)
             if os.path.isdir(dir_path):
+                print s
                 os.rename(dir_path, os.path.join(basedir, student[s]))
         else:
             not_keyed.append(fn)
@@ -49,10 +51,12 @@ for fn in os.listdir(basedir):
         not_regexed.append(fn)
 
 print "Found " + str(dir_count) + " dirs."
-print "These were skipped:"
-print not_regexed
-print "No key found for these:"
-print not_keyed
+print "\nThese were skipped:"
+for n in not_regexed:
+    print n,
+print "\n\nNo key found for these:"
+for n in not_keyed:
+    print n
 
 # Listing submission URLs
 with open('submissions.csv', 'wb') as file:
