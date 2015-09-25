@@ -1,35 +1,10 @@
 import os
 import re
 import csv
+import requests
+from peer_app import *
 
-class student_info:
-    gtid = ""
-    username = ""
-    firstname = ""
-    lastname = ""
-    type = ""
-
-    def __init__(self):
-        pass
-
-    def check():
-        if len(self.gtid) <= 0 or len(self.username) <= 0:
-            return False
-        else:
-            return True
-
-    def set_username(self, u):
-        self.username = u
-
-    def set_gtid(self, g):
-        self.gtid = g
-
-    def set_name(self, f, l):
-        self.firstname = f
-        self.lastname = l
-
-    def set_type(self, t):
-        self.type = t
+conn = peer_api('http://127.0.0.1:8000/api/', 'abcd')
 
 basedir = os.path.dirname(os.path.abspath(__file__))
 print "Looking into " + basedir
@@ -41,6 +16,7 @@ with open('roster_username.csv', 'rb') as file:
         if len(row) == 3:
             s = row[0].strip().lower()
             sinfo = student_info()
+            sinfo.set_email(s)
             sinfo.set_username(row[1].strip().lower())
             sinfo.set_type(row[2].strip().lower())
             student[s] = sinfo
@@ -62,6 +38,17 @@ print "Writing to roster.csv"
 with open('roster.csv', 'wb') as file:
     writer = csv.writer(file, delimiter=',')
     for s in student:
-        writer.writerow([student[s].username, s, student[s].gtid, student[s].type, student[s].lastname, student[s].firstname, 0])
+        data = {}
+        student[s].get_dict(data)
+        if conn.add_student(data) == 200:
+            r = conn.get_response()
+            if not r['error']:
+                print r['message']
+            else:
+                print "Error! " + str(err)
+        else:
+            print "Failed"
+            break
+        writer.writerow([student[s].username, s, student[s].gtid, student[s].usertype, student[s].lastname, student[s].firstname])
 
 print "roster.csv created"
