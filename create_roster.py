@@ -1,7 +1,6 @@
 import os
 import re
 import csv
-import requests
 from peer_app import *
 
 conn = peer_api('http://127.0.0.1:8000/api/', 'abcd')
@@ -45,7 +44,7 @@ with open('roster.csv', 'wb') as file:
             if not r['error']:
                 print r['message']
             else:
-                print "Error! " + str(err)
+                print "Error! " + str(r['error'])
         else:
             print "Failed"
             break

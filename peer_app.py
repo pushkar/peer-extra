@@ -10,6 +10,7 @@ class peer_api:
     data = {}
     add_student_url = "student/add/"
     get_student_url = "student/get/"
+    add_submission_url = "submission/add/"
 
     response = {}
 
@@ -30,7 +31,8 @@ class peer_api:
         url = self.base_url + self.add_student_url
         self.response = requests.get(url, params=self.data, headers=dict(Referer=url))
         if self.response.status_code != 200:
-            print self.response.content
+            print "Failed for "
+            print self.response.url
         return self.response.status_code
 
     def get_student(self, username):
@@ -39,11 +41,22 @@ class peer_api:
         url = self.base_url + self.get_student_url + username
         self.response = requests.get(url, params=self.data, headers=dict(Referer=url))
         if self.response.status_code != 200:
-            print self.response.content
+            print "Failed for "
+            print self.response.url
         return self.response.status_code
 
     def get_all_students(self):
         return get_student(self, "all")
+
+    def add_submission(self, data):
+        self.data = data
+        self.data['apikey'] = self.apikey
+        url = self.base_url + self.add_submission_url
+        self.response = requests.get(url, params=self.data, headers=dict(Referer=url))
+        if self.response.status_code != 200:
+            print "Failed for "
+            print self.response.url
+        return self.response.status_code
 
 class student_info:
     gtid = ""
@@ -85,4 +98,34 @@ class student_info:
         data['firstname'] = self.firstname
         data['lastname'] = self.lastname
         data['usertype'] = self.usertype
+        return data
+
+class submission_info:
+    username = ""
+    assignment = ""
+    server = ""
+    files = {}
+
+    def __init__(self):
+        self.files.clear()
+
+    def set_server(self, s):
+        self.server = s
+
+    def set_assignment(self, a):
+        self.assignment = a
+
+    def set_username(self, u):
+        self.username = u
+
+    def add_file(self, f_name, f_link):
+        self.files[f_link] = f_name
+
+    def total_files(self):
+        return len(self.files)
+
+    def get_dict(self, data):
+        data['username'] = self.username
+        data['assignment'] = self.assignment
+        data['files'] = json.dumps(self.files)
         return data
