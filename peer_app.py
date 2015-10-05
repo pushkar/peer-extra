@@ -11,6 +11,7 @@ class peer_api:
     add_student_url = "student/add/"
     get_student_url = "student/get/"
     add_submission_url = "submission/add/"
+    add_review_url = "review/add"
 
     response = {}
 
@@ -52,6 +53,16 @@ class peer_api:
         self.data = data
         self.data['apikey'] = self.apikey
         url = self.base_url + self.add_submission_url
+        self.response = requests.get(url, params=self.data, headers=dict(Referer=url))
+        if self.response.status_code != 200:
+            print "Failed for "
+            print self.response.url
+        return self.response.status_code
+
+    def add_review(self, data):
+        self.data = data
+        self.data['apikey'] = self.apikey
+        url = self.base_url + self.add_review_url
         self.response = requests.get(url, params=self.data, headers=dict(Referer=url))
         if self.response.status_code != 200:
             print "Failed for "
@@ -128,4 +139,27 @@ class submission_info:
         data['username'] = self.username
         data['assignment'] = self.assignment
         data['files'] = json.dumps(self.files)
+        return data
+
+class review_info:
+    submission_username = None
+    assigned_to_username = None
+    assignment_short_name = None
+
+    def __init__(self):
+        pass
+
+    def set_assignment_by_short_name(self, assignment):
+        self.assignment_short_name = assignment
+
+    def set_submission_by_username(self, username):
+        self.submission_username = username
+
+    def set_assigned_to_by_username(self, username):
+        self.assigned_to_username = username
+
+    def get_dict(self, data):
+        data['assignment_short_name'] = self.assignment_short_name
+        data['submission_username'] = self.submission_username
+        data['assigned_to_username'] = self.assigned_to_username
         return data

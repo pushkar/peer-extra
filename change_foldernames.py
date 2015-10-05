@@ -1,20 +1,29 @@
 import os
 import re
 import csv
+import sys
+
 from peer_app import *
+
+if len(sys.argv) < 2:
+    print "Try: python " + sys.argv[0] + " <folder_name>"
+    sys.exit()
 
 conn = peer_api('http://127.0.0.1:8000/api/', 'abcd')
 
 assignment = "supervised"
-server_url = "7641/supervised/"
+server_url = "http://www.robotvisions.org/7641/supervised/"
 feedback_dir_original = "Feedback Attachment(s)"
 submission_dir_original = "Submission attachment(s)"
 
 basedir = os.path.dirname(os.path.abspath(__file__))
+basedir = os.path.join(basedir, sys.argv[1])
+
 print "Looking into " + basedir
 
 student = {}
-with open('grades.csv', 'rb') as file:
+grade_file = os.path.join(basedir, "grades.csv")
+with open(grade_file, 'rb') as file:
     reader = csv.reader(file, delimiter=',')
     for row in reader:
         if len(row) == 5:
