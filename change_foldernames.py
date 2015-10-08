@@ -10,6 +10,8 @@ if len(sys.argv) < 2:
     sys.exit()
 
 conn = peer_api('http://127.0.0.1:8000/api/', 'abcd')
+#conn = peer_api('http://oms-fall2015.herokuapp.com/api/', 'abcd')
+
 
 assignment = "supervised"
 server_url = "http://www.robotvisions.org/7641/supervised/"

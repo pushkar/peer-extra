@@ -11,6 +11,8 @@ if len(sys.argv) < 2:
     sys.exit()
 
 conn = peer_api('http://127.0.0.1:8000/api/', 'abcd')
+#conn = peer_api('http://oms-fall2015.herokuapp.com/api/', 'abcd')
+
 
 basedir = os.path.dirname(os.path.abspath(__file__))
 basedir = os.path.join(basedir, sys.argv[1])

@@ -4,6 +4,7 @@ import csv
 from peer_app import *
 
 conn = peer_api('http://127.0.0.1:8000/api/', 'abcd')
+#conn = peer_api('http://oms-fall2015.herokuapp.com/api/', 'abcd')
 
 basedir = os.path.dirname(os.path.abspath(__file__))
 print "Looking into " + basedir

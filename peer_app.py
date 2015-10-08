@@ -12,6 +12,7 @@ class peer_api:
     get_student_url = "student/get/"
     add_submission_url = "submission/add/"
     add_review_url = "review/add"
+    update_review_url = "review/update"
 
     response = {}
 
@@ -63,6 +64,16 @@ class peer_api:
         self.data = data
         self.data['apikey'] = self.apikey
         url = self.base_url + self.add_review_url
+        self.response = requests.get(url, params=self.data, headers=dict(Referer=url))
+        if self.response.status_code != 200:
+            print "Failed for "
+            print self.response.url
+        return self.response.status_code
+
+    def update_review(self, data):
+        self.data = data
+        self.data['apikey'] = self.apikey
+        url = self.base_url + self.update_review_url
         self.response = requests.get(url, params=self.data, headers=dict(Referer=url))
         if self.response.status_code != 200:
             print "Failed for "
@@ -145,6 +156,8 @@ class review_info:
     submission_username = None
     assigned_to_username = None
     assignment_short_name = None
+    score = 0
+    comments = ""
 
     def __init__(self):
         pass
@@ -158,8 +171,14 @@ class review_info:
     def set_assigned_to_by_username(self, username):
         self.assigned_to_username = username
 
+    def set_score_and_comments(self, s, c):
+        self.score = s
+        self.comments = c
+
     def get_dict(self, data):
         data['assignment_short_name'] = self.assignment_short_name
         data['submission_username'] = self.submission_username
         data['assigned_to_username'] = self.assigned_to_username
+        data['score'] = self.score
+        data['comments'] = self.comments
         return data
