@@ -13,6 +13,7 @@ class peer_api:
     add_submission_url = "submission/add/"
     add_review_url = "review/add"
     update_review_url = "review/update"
+    get_review_url = "review/get"
 
     response = {}
 
@@ -74,6 +75,16 @@ class peer_api:
         self.data = data
         self.data['apikey'] = self.apikey
         url = self.base_url + self.update_review_url
+        self.response = requests.get(url, params=self.data, headers=dict(Referer=url))
+        if self.response.status_code != 200:
+            print "Failed for "
+            print self.response.url
+        return self.response.status_code
+
+    def get_review(self, data):
+        self.data = data
+        self.data['apikey'] = self.apikey
+        url = self.base_url + self.get_review_url
         self.response = requests.get(url, params=self.data, headers=dict(Referer=url))
         if self.response.status_code != 200:
             print "Failed for "

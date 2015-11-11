@@ -4,7 +4,7 @@ import csv
 import sys
 
 from peer_app import *
-assignment_short_name = "supervised"
+assignment_short_name = "randomized"
 
 if len(sys.argv) < 2:
     print "Try: python " + sys.argv[0] + " <csv_file>"
