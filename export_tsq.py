@@ -23,7 +23,10 @@ basedir = os.path.join(basedir, sys.argv[1])
 print "Looking into " + basedir
 
 student = {}
+student_scores = {}
 grade_file = os.path.join(basedir, "grades.csv")
+grade_file_out = os.path.join(basedir, "grades_out.csv")
+
 with open(grade_file, 'rb') as file:
     reader = csv.reader(file, delimiter=',')
     for row in reader:
@@ -59,13 +62,19 @@ for fn in os.listdir(basedir):
                         for review_pk, review in r['reviews'].iteritems():
                             if str(review['assigned_usertype']) == 'ta':
                                 ta_pk = review_pk
+                                student_scores[s] = review['score']
                                 print "Looking into Review " + str(review_pk)
                                 print "Score is " + str(review['score'])
 
                         if r['convos'].has_key(ta_pk):
-                            for user_pk, conv in r['convos'][ta_pk].iteritems():
-                                print conv['text']
-                                print "----------------------\n"
+                            comments = open(comments_file, 'w')
+                            comments.write("You can find your feedback here: " + server_url + assignment + "/?review=" + str(ta_pk))
+                            # I had to comment this out because of how t-sq imports comments! Removes my \n and br
+                            #for user_pk, conv in r['convos'][ta_pk].iteritems():
+                                #comments.write("\n\n----------------------\n\n")
+                                #comments.write(conv['text'].replace('\n', '<br />'))
+                                #comments.write("\n\n----------------------\n\n")
+                            comments.close()
                 else:
                     print "Error! " + str(r['error'])
             else:
@@ -76,6 +85,24 @@ for fn in os.listdir(basedir):
 
     else:
         not_regexed.append(fn)
+
+with open(grade_file, 'rb') as file, open(grade_file_out, 'wb') as file_out:
+    reader = csv.reader(file, delimiter=',')
+    writer = csv.writer(file_out, delimiter=',')
+    for row in reader:
+        score = 0
+        if len(row) == 5:
+            s = row[1].strip().lower()
+            s_val = row[0].strip().lower()
+            if len(s) > 0:
+                student[s] = s_val
+            if student_scores.has_key(s):
+                score = student_scores[s]
+            if row[0] == "Display ID":
+                score = "grade"
+            writer.writerow([row[0], row[1], row[2], row[3], score])
+        else:
+            writer.writerow(row)
 
 print "Found " + str(dir_count) + " dirs."
 print "\nThese were skipped:"
