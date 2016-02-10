@@ -11,10 +11,12 @@ if len(sys.argv) < 2:
 
 conn = peer_api('http://127.0.0.1:8000/api/', 'abcd')
 #conn = peer_api('http://oms-fall2015.herokuapp.com/api/', 'abcd')
+#conn = peer_api('https://cs4641-spring2016.herokuapp.com/api/', 'abcd')
 
 
-assignment = "unsupervised"
-server_url = "http://www.robotvisions.org/7641/unsupervised/"
+
+assignment = "supervised"
+server_url = "http://www.robotvisions.org/4641-2/supervised/"
 feedback_dir_original = "Feedback Attachment(s)"
 submission_dir_original = "Submission attachment(s)"
 
