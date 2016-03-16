@@ -5,20 +5,22 @@ import sys
 
 from peer_app import *
 
-if len(sys.argv) < 2:
-    print "Try: python " + sys.argv[0] + " <folder_name>"
+api_url = "http://rldm.herokuapp.com/api/"
+server_url = "http://rldm.herokuapp.com/assignment/"
+api_key = "E3nl1gchwUT7qOTC2G77A7f2i5wcMZdf"
+
+if len(sys.argv) < 3:
+    print "Try: python " + sys.argv[0] + " <assignment> <folder_name>"
     sys.exit()
 
-conn = peer_api('http://127.0.0.1:8000/api/', 'abcd')
-#conn = peer_api('http://oms-fall2015.herokuapp.com/api/', 'abcd')
+conn = peer_api(api_url, api_key)
 
-assignment = "randomized"
-server_url = "http://cs7641-fall2015.robotvisions.org/assignment/"
+assignment = sys.argv[1]
 feedback_dir_original = "Feedback Attachment(s)"
 submission_dir_original = "Submission attachment(s)"
 
 basedir = os.path.dirname(os.path.abspath(__file__))
-basedir = os.path.join(basedir, sys.argv[1])
+basedir = os.path.join(basedir, sys.argv[2])
 
 print "Looking into " + basedir
 
@@ -56,27 +58,28 @@ for fn in os.listdir(basedir):
             data = {}
             if conn.get_review(ri.get_dict(data)) == 200:
                 r = conn.get_response()
-                if not r['error']:
-                    # Deal with reviews and convos here
-                    if r.has_key('reviews') and r.has_key('convos'):
-                        for review_pk, review in r['reviews'].iteritems():
-                            if str(review['assigned_usertype']) == 'ta':
-                                ta_pk = review_pk
-                                student_scores[s] = review['score']
-                                print "Looking into Review " + str(review_pk)
-                                print "Score is " + str(review['score'])
+                # Deal with reviews and convos here
+                if r.has_key('reviews') and r.has_key('convos'):
+                    for review_pk, review in r['reviews'].iteritems():
+                        if str(review['assigned_usertype']) == 'ta':
+                            ta_pk = review_pk
+                            student_scores[s] = review['score']
+                            print "Looking into Review " + str(review_pk)
+                            print "Score is " + str(review['score'])
 
-                        if r['convos'].has_key(ta_pk):
-                            comments = open(comments_file, 'w')
-                            comments.write("You can find your feedback here: " + server_url + assignment + "/?review=" + str(ta_pk))
-                            # I had to comment this out because of how t-sq imports comments! Removes my \n and br
-                            #for user_pk, conv in r['convos'][ta_pk].iteritems():
-                                #comments.write("\n\n----------------------\n\n")
-                                #comments.write(conv['text'].replace('\n', '<br />'))
-                                #comments.write("\n\n----------------------\n\n")
-                            comments.close()
+                            if r['convos'].has_key(ta_pk):
+                                comments = open(comments_file, 'w')
+                                comments.write("You can find your feedback here: " + server_url + assignment + "/?review=" + str(ta_pk))
+                                # I had to comment this out because of how t-sq imports comments! Removes my \n and br
+                                #for user_pk, conv in r['convos'][ta_pk].iteritems():
+                                    #comments.write("\n\n----------------------\n\n")
+                                    #comments.write(conv['text'].replace('\n', '<br />'))
+                                    #comments.write("\n\n----------------------\n\n")
+                                comments.close()
                 else:
-                    print "Error! " + str(r['error'])
+                    print "Error! "
+                    # + str(r['error'])
+                    # TODO: This has to come back
             else:
                 print "Failed"
                 break
@@ -111,3 +114,6 @@ for n in not_regexed:
 print "\n\nNo key found for these:"
 for n in not_keyed:
     print n
+
+os.remove(grade_file)
+os.rename(grade_file_out, grade_file)

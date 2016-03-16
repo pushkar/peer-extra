@@ -10,10 +10,13 @@ class peer_api:
     data = {}
     add_student_url = "student/add/"
     get_student_url = "student/get/"
+    update_student_url = "student/update/"
     add_submission_url = "submission/add/"
     add_review_url = "review/add"
     update_review_url = "review/update"
     get_review_url = "review/get"
+    get_codework_url = "codework/get"
+    update_codework_url = "codework/update"
 
     response = {}
 
@@ -27,6 +30,9 @@ class peer_api:
     def get_response(self):
         data = json.loads(self.response.content)
         return data
+
+    def get_response_url(self):
+        return self.response.url
 
     def add_student(self, data):
         self.data = data
@@ -42,6 +48,16 @@ class peer_api:
         self.data = {}
         self.data['apikey'] = self.apikey
         url = self.base_url + self.get_student_url + username
+        self.response = requests.get(url, params=self.data, headers=dict(Referer=url))
+        if self.response.status_code != 200:
+            print "Failed for "
+            print self.response.url
+        return self.response.status_code
+
+    def update_student(self, username, data):
+        self.data = data
+        self.data['apikey'] = self.apikey
+        url = self.base_url + self.update_student_url + username
         self.response = requests.get(url, params=self.data, headers=dict(Referer=url))
         if self.response.status_code != 200:
             print "Failed for "
@@ -91,6 +107,26 @@ class peer_api:
             print self.response.url
         return self.response.status_code
 
+    def get_codework(self, data, name, username):
+        self.data = data
+        self.data['apikey'] = self.apikey
+        url = self.base_url + self.get_codework_url + "/" + name + "/" + username
+        self.response = requests.get(url, params=self.data, headers=dict(Referer=url))
+        if self.response.status_code != 200:
+            print "Failed for "
+            print self.response.url
+        return self.response.status_code
+
+    def update_codework(self, data, id):
+        self.data = data
+        self.data['apikey'] = self.apikey
+        url = self.base_url + self.update_codework_url + "/" + id
+        self.response = requests.get(url, params=self.data, headers=dict(Referer=url))
+        if self.response.status_code != 200:
+            print "Failed for "
+            print self.response.url
+        return self.response.status_code
+
 class student_info:
     gtid = ""
     email = ""
@@ -125,12 +161,18 @@ class student_info:
         self.usertype = t
 
     def get_dict(self, data):
-        data['username'] = self.username
-        data['gtid'] = self.gtid
-        data['email'] = self.email
-        data['firstname'] = self.firstname
-        data['lastname'] = self.lastname
-        data['usertype'] = self.usertype
+        if self.username:
+            data['username'] = self.username
+        if self.gtid:
+            data['gtid'] = self.gtid
+        if self.email:
+            data['email'] = self.email
+        if self.firstname:
+            data['firstname'] = self.firstname
+        if self.lastname:
+            data['lastname'] = self.lastname
+        if self.usertype:
+            data['usertype'] = self.usertype
         return data
 
 class submission_info:
@@ -193,3 +235,15 @@ class review_info:
         data['score'] = self.score
         data['comments'] = self.comments
         return data
+
+class codework_info:
+    username = None
+    assignment_short_name = None
+    score = 0
+    comments = ""
+
+    def __init__(self):
+        pass
+
+    def set_assignment_by_short_name(self, assignment):
+        self.assignment_short_name = assignment
