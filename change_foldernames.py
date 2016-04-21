@@ -8,15 +8,14 @@ from peer_app import *
 if len(sys.argv) < 2:
     print "Try: python " + sys.argv[0] + " <folder_name>"
     sys.exit()
+    
+api_url = "http://rldm.herokuapp.com/api/"
+api_key = "E3nl1gchwUT7qOTC2G77A7f2i5wcMZdf"
 
-conn = peer_api('http://127.0.0.1:8000/api/', 'abcd')
-#conn = peer_api('http://oms-fall2015.herokuapp.com/api/', 'abcd')
-#conn = peer_api('https://cs4641-spring2016.herokuapp.com/api/', 'abcd')
+conn = peer_api(api_url, api_key)
 
-
-
-assignment = "supervised"
-server_url = "http://www.robotvisions.org/4641-2/supervised/"
+assignment = "final"
+server_url = "http://www.robotvisions.org/8803-1/final/"
 feedback_dir_original = "Feedback Attachment(s)"
 submission_dir_original = "Submission attachment(s)"
 
@@ -104,11 +103,12 @@ with open('submissions.csv', 'wb') as file:
                 data = {}
                 sub.get_dict(data)
                 if conn.add_submission(data) == 200:
+                    print conn.get_response_url()
                     r = conn.get_response()
-                    if not r['error']:
-                        print r['message']
-                    else:
+                    if 'error' in r:
                         print "Error! " + str(r['error'])
+                    else:
+                        print r['message']
                 else:
                     print "Failed"
                     break
